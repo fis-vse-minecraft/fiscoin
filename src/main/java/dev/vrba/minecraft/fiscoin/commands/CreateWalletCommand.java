@@ -2,7 +2,7 @@ package dev.vrba.minecraft.fiscoin.commands;
 
 import dev.vrba.minecraft.fiscoin.Fiscoin;
 import dev.vrba.minecraft.fiscoin.WalletsManager;
-import dev.vrba.minecraft.fiscoin.blockchain.Wallet;
+import dev.vrba.minecraft.fiscoin.blockchain.FiscoinWallet;
 import org.apache.commons.codec.binary.Hex;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -33,7 +33,7 @@ public class CreateWalletCommand implements CommandExecutor {
             Player player = (Player) sender;
             WalletsManager manager = plugin.getWalletsManager();
 
-            Wallet wallet = manager.walletOf(player).orElseGet(() -> manager.generate(player));
+            FiscoinWallet wallet = manager.walletOf(player).orElseGet(() -> manager.generate(player));
 
             String publicKey = keyFingerprint(wallet.getPublicKey().getEncoded());
 

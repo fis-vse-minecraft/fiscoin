@@ -8,20 +8,20 @@ import java.security.*;
 
 @Getter
 @EqualsAndHashCode
-public class Wallet {
+public class FiscoinWallet {
     private final PublicKey publicKey;
 
     private final PrivateKey privateKey;
 
-    public Wallet() {
+    public FiscoinWallet() {
         this(generateRandomKeyPair());
     }
 
-    public Wallet(@NotNull KeyPair pair) {
+    public FiscoinWallet(@NotNull KeyPair pair) {
         this(pair.getPublic(), pair.getPrivate());
     }
 
-    public Wallet(@NotNull PublicKey publicKey, @NotNull PrivateKey privateKey) {
+    public FiscoinWallet(@NotNull PublicKey publicKey, @NotNull PrivateKey privateKey) {
         this.publicKey = publicKey;
         this.privateKey = privateKey;
     }

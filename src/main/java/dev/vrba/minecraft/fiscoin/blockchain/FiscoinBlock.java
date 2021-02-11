@@ -11,6 +11,9 @@ import java.util.Date;
 @Getter
 @EqualsAndHashCode
 public class FiscoinBlock {
+
+    public static final String INITIAL_HASH = "0";
+
     /**
      * Hash of the previous block in the given blockchain,
      * if the previous block hash is equal to 0, it is considered being the first block

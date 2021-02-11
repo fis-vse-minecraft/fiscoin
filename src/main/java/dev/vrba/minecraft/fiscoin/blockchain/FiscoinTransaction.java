@@ -50,16 +50,19 @@ public class FiscoinTransaction {
         this.value = value;
     }
 
-    public FiscoinTransaction sign(@NotNull PrivateKey key) {
-        try {
-            String input = Hex.encodeHexString(sender.getEncoded()) +
-                    Hex.encodeHexString(receiver.getEncoded()) +
-                    value;
+    public @NotNull String toString() {
+        return id.toString() +
+               Hex.encodeHexString(sender.getEncoded()) +
+               Hex.encodeHexString(receiver.getEncoded()) +
+               value;
+    }
 
+    public @NotNull FiscoinTransaction sign(@NotNull PrivateKey key) {
+        try {
             Signature signature = Signature.getInstance("SHA256withRSA");
 
             signature.initSign(key);
-            signature.update(input.getBytes());
+            signature.update(this.toString().getBytes());
 
             this.signature = signature.sign();
             return this;
@@ -76,14 +79,10 @@ public class FiscoinTransaction {
         }
 
         try {
-            String input = Hex.encodeHexString(sender.getEncoded()) +
-                    Hex.encodeHexString(receiver.getEncoded()) +
-                    value;
-
             Signature signature = Signature.getInstance("SHA256withRSA");
 
             signature.initVerify(sender);
-            signature.update(input.getBytes());
+            signature.update(this.toString().getBytes());
 
             return signature.verify(this.signature);
         }

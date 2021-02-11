@@ -1,6 +1,6 @@
 package dev.vrba.minecraft.fiscoin;
 
-import dev.vrba.minecraft.fiscoin.blockchain.Wallet;
+import dev.vrba.minecraft.fiscoin.blockchain.FiscoinWallet;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,18 +12,18 @@ import java.util.*;
  */
 public class WalletsManager {
 
-    private final Map<UUID, Wallet> wallets = new HashMap<>();
+    private final Map<UUID, FiscoinWallet> wallets = new HashMap<>();
 
-    public @NotNull Wallet generate(@NotNull Player player) {
+    public @NotNull FiscoinWallet generate(@NotNull Player player) {
         // A new wallet with random private and public key pair
-        Wallet wallet = new Wallet();
+        FiscoinWallet wallet = new FiscoinWallet();
 
-        this.wallets.put(player.getUniqueId(), new Wallet());
+        this.wallets.put(player.getUniqueId(), new FiscoinWallet());
 
         return wallet;
     }
 
-    public @NotNull Optional<Wallet> walletOf(@NotNull Player player) {
+    public @NotNull Optional<FiscoinWallet> walletOf(@NotNull Player player) {
         return Optional.ofNullable(this.wallets.get(player.getUniqueId()));
     }
 }

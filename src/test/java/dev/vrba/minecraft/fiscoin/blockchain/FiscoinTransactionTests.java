@@ -8,8 +8,8 @@ public class FiscoinTransactionTests {
 
     @Test
     public void testTransactionCanBeCreated() {
-        Wallet alice = new Wallet();
-        Wallet bob = new Wallet();
+        FiscoinWallet alice = new FiscoinWallet();
+        FiscoinWallet bob = new FiscoinWallet();
 
         FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublicKey(), bob.getPublicKey(), 0.1);
 
@@ -18,8 +18,8 @@ public class FiscoinTransactionTests {
 
     @Test
     public void testTransactionCanBeSignedAndVerified() {
-        Wallet alice = new Wallet();
-        Wallet bob = new Wallet();
+        FiscoinWallet alice = new FiscoinWallet();
+        FiscoinWallet bob = new FiscoinWallet();
 
         FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublicKey(), bob.getPublicKey(), 0.1)
                 .sign(alice.getPrivateKey());
@@ -30,8 +30,8 @@ public class FiscoinTransactionTests {
 
     @Test
     public void testTransactionCannotBeVerifiedWithoutSignature() {
-        Wallet alice = new Wallet();
-        Wallet bob = new Wallet();
+        FiscoinWallet alice = new FiscoinWallet();
+        FiscoinWallet bob = new FiscoinWallet();
 
         FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublicKey(), bob.getPublicKey(), 0.1);
 
@@ -41,8 +41,8 @@ public class FiscoinTransactionTests {
 
     @Test
     public void testTransactionCannotBeNotSignedAndVerified() {
-        Wallet alice = new Wallet();
-        Wallet bob = new Wallet();
+        FiscoinWallet alice = new FiscoinWallet();
+        FiscoinWallet bob = new FiscoinWallet();
 
         FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublicKey(), bob.getPublicKey(), 0.1)
                 .sign(bob.getPrivateKey());
