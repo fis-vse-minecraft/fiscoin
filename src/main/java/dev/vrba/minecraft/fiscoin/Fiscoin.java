@@ -9,6 +9,8 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public final class Fiscoin extends JavaPlugin {
+    // Fiscoin symbol representation
+    public static final String SYMBOL = "𝔽";
 
     @Override
     public void onEnable() {
