@@ -5,6 +5,8 @@ api-version: 1.16
 authors: [ 0x4a69726b61 ]
 description: Cryptocurrency blockchain mod where Proof Of Work (mining) is implemented by mining blocks
 commands:
+  transactions:
+    description: View all currently pending transactions
   blockchain:
     description: View the current blockchain state and blocks
   wallet:

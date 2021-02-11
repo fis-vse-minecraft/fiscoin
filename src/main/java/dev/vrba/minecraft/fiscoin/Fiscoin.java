@@ -6,6 +6,7 @@ import dev.vrba.minecraft.fiscoin.blockchain.FiscoinTransaction;
 import dev.vrba.minecraft.fiscoin.blockchain.FiscoinWallet;
 import dev.vrba.minecraft.fiscoin.commands.CreateWalletCommand;
 import dev.vrba.minecraft.fiscoin.commands.ViewBlockchainCommand;
+import dev.vrba.minecraft.fiscoin.commands.ViewPendingTransactions;
 import dev.vrba.minecraft.fiscoin.listeners.MiningEventListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -26,7 +27,7 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public final class Fiscoin extends JavaPlugin {
 
-    public static final String SYMBOL = "𝔽";
+    public static final String SYMBOL = "Ƒ";
 
     // How many leading zeros does the block hash need to be considered a valid proof-of-work
     public static final int MINING_DIFFICULTY = 2;
@@ -65,7 +66,8 @@ public final class Fiscoin extends JavaPlugin {
     private void registerCommands() {
         Map<String, ? extends CommandExecutor> commands = Map.of(
                 "wallet", new CreateWalletCommand(this),
-                "blockchain", new ViewBlockchainCommand(this)
+                "blockchain", new ViewBlockchainCommand(this),
+                "transactions", new ViewPendingTransactions(this)
         );
 
         commands.forEach((name, executor) -> {
@@ -96,7 +98,7 @@ public final class Fiscoin extends JavaPlugin {
         if (currentTransactionBlock == null) {
             currentTransactionBlock = new FiscoinBlock(
                     blockchain.getLastBlockHash(),
-                    pendingTransactions.remove(0),
+                    pendingTransactions.get(0),
                     ""
             );
         }
@@ -111,12 +113,11 @@ public final class Fiscoin extends JavaPlugin {
         Collections.copy(blockchain.getBlocks(), blocks);
 
         FiscoinBlockchain copy = new FiscoinBlockchain(blocks);
-        FiscoinBlock current = currentTransactionBlock;
         FiscoinBlock solution = new FiscoinBlock(
-                current.getPreviousHash(),
-                current.getTransaction(),
+                currentTransactionBlock.getPreviousHash(),
+                currentTransactionBlock.getTransaction(),
                 nonce,
-                current.getTimestamp()
+                currentTransactionBlock.getTimestamp()
         );
 
         // TODO: This is also bad, because one fake block would invalidate the global blockchain...
@@ -130,10 +131,13 @@ public final class Fiscoin extends JavaPlugin {
                                     " which validated transaction " + ChatColor.YELLOW + solution.getTransaction().getId() + ChatColor.RESET
                     ));
 
+            pendingTransactions.remove(0);
+            currentTransactionBlock = null;
+
             if (!this.pendingTransactions.isEmpty()) {
                 currentTransactionBlock = new FiscoinBlock(
                         blockchain.getLastBlockHash(),
-                        pendingTransactions.remove(0),
+                        pendingTransactions.get(0),
                         ""
                 );
             }

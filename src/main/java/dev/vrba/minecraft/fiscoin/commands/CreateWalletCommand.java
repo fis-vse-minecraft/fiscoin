@@ -42,7 +42,7 @@ public class CreateWalletCommand implements CommandExecutor {
             }
 
             FiscoinWallet wallet = potential.orElseGet(() -> manager.generate(player));
-            String publicKey = keyFingerprint(wallet.getPublicKey().getEncoded());
+            String publicKey = FiscoinWallet.fingerprint(wallet.getPublicKey());
 
             player.sendTitle(
                     message,
@@ -54,15 +54,5 @@ public class CreateWalletCommand implements CommandExecutor {
         }
 
         return false;
-    }
-
-    private static String keyFingerprint(byte[] key) {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            return Hex.encodeHexString(messageDigest.digest(key));
-        }
-        catch (NoSuchAlgorithmException exception) {
-            throw new RuntimeException(exception);
-        }
     }
 }

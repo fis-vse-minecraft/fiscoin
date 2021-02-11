@@ -2,6 +2,7 @@ package dev.vrba.minecraft.fiscoin.blockchain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.*;
@@ -24,6 +25,17 @@ public class FiscoinWallet {
     public FiscoinWallet(@NotNull PublicKey publicKey, @NotNull PrivateKey privateKey) {
         this.publicKey = publicKey;
         this.privateKey = privateKey;
+    }
+
+    public static @NotNull String fingerprint(@NotNull PublicKey publicKey) {
+        try {
+            byte[] key = publicKey.getEncoded();
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            return Hex.encodeHexString(messageDigest.digest(key));
+        }
+        catch (NoSuchAlgorithmException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     private static @NotNull KeyPair generateRandomKeyPair() {
