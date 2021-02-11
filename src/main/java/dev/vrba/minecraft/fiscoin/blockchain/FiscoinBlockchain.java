@@ -10,11 +10,27 @@ import java.util.NoSuchElementException;
 public class FiscoinBlockchain {
 
     @Getter
-    private final ArrayList<FiscoinBlock> blocks = new ArrayList<>();
+    private final ArrayList<FiscoinBlock> blocks;
+
+    public FiscoinBlockchain() {
+        this.blocks = new ArrayList<>();
+    }
+
+    public FiscoinBlockchain(@NotNull ArrayList<FiscoinBlock> blocks) {
+        this.blocks = blocks;
+    }
 
     public @NotNull FiscoinBlockchain add(@NotNull FiscoinBlock block) {
         this.blocks.add(block);
         return this;
+    }
+
+    public @NotNull String getLastBlockHash() {
+        if (this.blocks.isEmpty()) {
+            return FiscoinBlock.INITIAL_HASH;
+        }
+
+        return this.blocks.get(this.blocks.size() - 1).getHash();
     }
 
     public boolean isValid() {

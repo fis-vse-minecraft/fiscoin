@@ -2,18 +2,23 @@ package dev.vrba.minecraft.fiscoin;
 
 import dev.vrba.minecraft.fiscoin.blockchain.FiscoinBlock;
 import dev.vrba.minecraft.fiscoin.blockchain.FiscoinBlockchain;
+import dev.vrba.minecraft.fiscoin.blockchain.FiscoinTransaction;
+import dev.vrba.minecraft.fiscoin.blockchain.FiscoinWallet;
 import dev.vrba.minecraft.fiscoin.commands.CreateWalletCommand;
 import dev.vrba.minecraft.fiscoin.commands.ViewBlockchainCommand;
 import dev.vrba.minecraft.fiscoin.listeners.MiningEventListener;
 import lombok.Getter;
-import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
@@ -32,13 +37,20 @@ public final class Fiscoin extends JavaPlugin {
     @Getter
     private final FiscoinBlockchain blockchain = new FiscoinBlockchain();
 
+    // Also, this is one of the implementation pain points, as each miner would actually keep track of awaiting
+    // transactions themselves and decide based on miner fee?
+    @Getter
+    private final List<FiscoinTransaction> pendingTransactions = new ArrayList<>();
+
+    @Getter
+    private FiscoinBlock currentTransactionBlock = null;
+
     @Override
     public void onEnable() {
         registerCommands();
         registerEventListeners();
 
-        // TODO: Run this in an async bukkit task
-        calculateInitialBlock();
+        createInitialTransaction();
     }
 
     @Override
@@ -64,8 +76,8 @@ public final class Fiscoin extends JavaPlugin {
 
     private void registerEventListeners() {
         PluginManager manager = Bukkit.getPluginManager();
-        Listener[] listeners = new Listener[] {
-            new MiningEventListener(this)
+        Listener[] listeners = new Listener[]{
+                new MiningEventListener(this)
         };
 
         for (Listener listener : listeners) {
@@ -73,20 +85,52 @@ public final class Fiscoin extends JavaPlugin {
         }
     }
 
-    private void calculateInitialBlock() {
-        String hash = "";
-        FiscoinBlock block = new FiscoinBlock(FiscoinBlock.INITIAL_HASH, "", "");
-        String requiredProof = new String(new char[MINING_DIFFICULTY]).replace('\0', '0');
+    private void addTransaction(@NotNull FiscoinTransaction transaction) {
+        pendingTransactions.add(transaction);
 
-        while (!hash.startsWith(requiredProof)) {
-            String nonce = RandomStringUtils.randomAlphanumeric(8);
+        if (currentTransactionBlock == null) {
+            currentTransactionBlock = new FiscoinBlock(
+                    blockchain.getLastBlockHash(),
+                    pendingTransactions.remove(0).toString(),
+                    ""
+            );
+        }
+    }
 
-            block = new FiscoinBlock(FiscoinBlock.INITIAL_HASH, "", nonce);
-            hash = block.getHash();
+    private void addCurrentBlockSolution(@NotNull String nonce) {
+        if (currentTransactionBlock == null) {
+            return;
         }
 
-        System.out.println("Created first fiscoin blockchain block [" + hash + "]");
+        ArrayList<FiscoinBlock> blocks = new ArrayList<>();
+        Collections.copy(blockchain.getBlocks(), blocks);
 
-        blockchain.add(block);
+        FiscoinBlockchain copy = new FiscoinBlockchain(blocks);
+        FiscoinBlock current = currentTransactionBlock;
+        FiscoinBlock solution = new FiscoinBlock(
+                current.getPreviousHash(),
+                current.getData(),
+                nonce,
+                current.getTimestamp()
+        );
+
+        // TODO: This is also bad, because one fake block would invalidate the global blockchain...
+        if (copy.add(solution).isValid()) {
+            blockchain.add(solution);
+        }
+    }
+
+    private void createInitialTransaction() {
+        FiscoinWallet alice = new FiscoinWallet();
+        FiscoinWallet bob = new FiscoinWallet();
+
+        FiscoinTransaction transaction = new FiscoinTransaction(
+                alice.getPublicKey(),
+                bob.getPublicKey(),
+                0
+        )
+                .sign(alice.getPrivateKey());
+
+        pendingTransactions.add(transaction);
     }
 }
