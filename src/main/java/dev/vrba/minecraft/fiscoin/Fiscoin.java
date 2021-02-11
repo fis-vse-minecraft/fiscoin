@@ -28,7 +28,7 @@ public final class Fiscoin extends JavaPlugin {
 
     private void registerCommands() {
         Map<String, ? extends CommandExecutor> commands = Map.of(
-                "create-wallet", new CreateWalletCommand()
+                "create-wallet", new CreateWalletCommand(this)
         );
 
         commands.forEach((name, executor) -> {

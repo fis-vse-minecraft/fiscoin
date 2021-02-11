@@ -16,15 +16,14 @@ public class WalletsManager {
 
     public @NotNull Wallet generate(@NotNull Player player) {
         // A new wallet with random private and public key pair
-        return Objects.requireNonNull(
-            this.wallets.put(
-                player.getUniqueId(),
-                new Wallet()
-            )
-        );
+        Wallet wallet = new Wallet();
+
+        this.wallets.put(player.getUniqueId(), new Wallet());
+
+        return wallet;
     }
 
     public @NotNull Optional<Wallet> walletOf(@NotNull Player player) {
-        return Optional.of(this.wallets.get(player.getUniqueId()));
+        return Optional.ofNullable(this.wallets.get(player.getUniqueId()));
     }
 }
