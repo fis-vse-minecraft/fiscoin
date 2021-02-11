@@ -1,6 +1,5 @@
 package dev.vrba.minecraft.fiscoin.blockchain;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.codec.binary.Hex;
@@ -12,9 +11,6 @@ import java.util.Date;
 @Getter
 @EqualsAndHashCode
 public class FiscoinBlock {
-
-    private final String hash;
-
     /**
      * Hash of the previous block in the given blockchain,
      * if the previous block hash is equal to 0, it is considered being the first block
@@ -26,6 +22,8 @@ public class FiscoinBlock {
     private final long timestamp;
 
     private final String nonce;
+
+    private final String hash;
 
     public FiscoinBlock(@NotNull String previousHash, @NotNull String data, @NotNull String nonce) {
         this(previousHash, data, nonce, new Date().getTime());
