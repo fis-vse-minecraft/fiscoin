@@ -15,8 +15,6 @@ public class CreateWalletCommand implements CommandExecutor {
             @NotNull String[] args
     ) {
         if (sender instanceof Player) {
-            // Actually create the wallet
-            return true;
         }
 
         return false;
