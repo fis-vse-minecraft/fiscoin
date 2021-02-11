@@ -10,8 +10,11 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public final class Fiscoin extends JavaPlugin {
-    // Fiscoin symbol representation
+
     public static final String SYMBOL = "𝔽";
+
+    // How many leading zeros does the block hash need to be considered a valid proof-of-work
+    public static final int MINING_DIFFICULTY = 2;
 
     @Getter
     private final WalletsManager walletsManager = new WalletsManager();
