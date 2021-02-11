@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 public class CreateWalletCommand implements CommandExecutor {
 
@@ -33,16 +34,22 @@ public class CreateWalletCommand implements CommandExecutor {
             Player player = (Player) sender;
             WalletsManager manager = plugin.getWalletsManager();
 
-            FiscoinWallet wallet = manager.walletOf(player).orElseGet(() -> manager.generate(player));
+            String message = "Wallet generated";
+            Optional<FiscoinWallet> potential = manager.walletOf(player);
 
+            if (potential.isPresent()) {
+                message = "Wallet loaded";
+            }
+
+            FiscoinWallet wallet = potential.orElseGet(() -> manager.generate(player));
             String publicKey = keyFingerprint(wallet.getPublicKey().getEncoded());
 
             player.sendTitle(
-                "Wallet generated",
-                ChatColor.AQUA + publicKey + ChatColor.RESET,
-                20,
-                100,
-                20
+                    message,
+                    ChatColor.AQUA + publicKey + ChatColor.RESET,
+                    20,
+                    100,
+                    20
             );
         }
 
