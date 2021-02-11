@@ -4,3 +4,6 @@ main: dev.vrba.minecraft.fiscoin.Fiscoin
 api-version: 1.16
 authors: [ 0x4a69726b61 ]
 description: Cryptocurrency blockchain mod where Proof Of Work (mining) is implemented by mining blocks
+commands:
+  create-wallet:
+    description: Generates key pair for creating transaction signatures
