@@ -2,8 +2,9 @@ package dev.vrba.minecraft.fiscoin.listeners;
 
 import dev.vrba.minecraft.fiscoin.Fiscoin;
 import dev.vrba.minecraft.fiscoin.blockchain.FiscoinBlock;
-import dev.vrba.minecraft.fiscoin.blockchain.FiscoinBlockchain;
-import dev.vrba.minecraft.fiscoin.blockchain.FiscoinTransaction;
+import org.apache.commons.lang.RandomStringUtils;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -19,16 +20,40 @@ public class MiningEventListener implements Listener {
 
     @EventHandler
     public void onBlockMined(BlockBreakEvent event) {
-        if (plugin.getPendingTransactions().isEmpty()) {
+        if (plugin.getCurrentTransactionBlock() == null) {
             return;
         }
 
-        FiscoinBlockchain blockchain = plugin.getBlockchain();
-        FiscoinTransaction transaction = plugin.getPendingTransactions().get(0);
-
-        FiscoinBlock block = new FiscoinBlock(blockchain.getLastBlockHash(), transaction.toString(), "");
-
         // TODO: Calculate number of guesses based on mined block type
+        guess(event);
+    }
 
+    private void guess(@NotNull BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        FiscoinBlock current = plugin.getCurrentTransactionBlock();
+
+        String nonce = RandomStringUtils.randomAlphanumeric(16);
+        FiscoinBlock guess = new FiscoinBlock(
+                current.getPreviousHash(),
+                current.getTransaction(),
+                nonce,
+                current.getTimestamp()
+        );
+
+        if (guess.hasValidHash()) {
+            player.sendTitle(
+                    "Hash found",
+                    "You just earned " + Fiscoin.MINING_REWARD + " " + Fiscoin.SYMBOL,
+                    10,
+                    60,
+                    10
+            );
+
+            plugin.addCurrentBlockSolution(nonce, player);
+        }
+        else {
+            Location location = event.getBlock().getLocation();
+            location.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, location, 25);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package dev.vrba.minecraft.fiscoin.blockchain;
 
+import dev.vrba.minecraft.fiscoin.Fiscoin;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.codec.binary.Hex;
@@ -20,7 +21,7 @@ public class FiscoinBlock {
      */
     private final String previousHash;
 
-    private final String data;
+    private final FiscoinTransaction transaction;
 
     private final long timestamp;
 
@@ -28,13 +29,13 @@ public class FiscoinBlock {
 
     private final String hash;
 
-    public FiscoinBlock(@NotNull String previousHash, @NotNull String data, @NotNull String nonce) {
-        this(previousHash, data, nonce, new Date().getTime());
+    public FiscoinBlock(@NotNull String previousHash, @NotNull FiscoinTransaction transaction, @NotNull String nonce) {
+        this(previousHash, transaction, nonce, new Date().getTime());
     }
 
-    public FiscoinBlock(@NotNull String previousHash, @NotNull String data, @NotNull String nonce, long timestamp) {
+    public FiscoinBlock(@NotNull String previousHash, @NotNull FiscoinTransaction transaction, @NotNull String nonce, long timestamp) {
         this.previousHash = previousHash;
-        this.data = data;
+        this.transaction = transaction;
         this.nonce = nonce;
         this.timestamp = timestamp;
         this.hash = calculateBlockHash();
@@ -42,7 +43,7 @@ public class FiscoinBlock {
 
     private @NotNull String calculateBlockHash() {
         try {
-            String input = previousHash + timestamp + nonce + data;
+            String input = previousHash + timestamp + nonce + transaction.toString();
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
             return Hex.encodeHexString(digest.digest(input.getBytes()));
@@ -50,5 +51,10 @@ public class FiscoinBlock {
         catch (Exception exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    public boolean hasValidHash() {
+        String proof = new String(new char[Fiscoin.MINING_DIFFICULTY]).replace('\0', '0');
+        return hash.startsWith(proof);
     }
 }

@@ -9,8 +9,10 @@ import dev.vrba.minecraft.fiscoin.commands.ViewBlockchainCommand;
 import dev.vrba.minecraft.fiscoin.listeners.MiningEventListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +30,9 @@ public final class Fiscoin extends JavaPlugin {
 
     // How many leading zeros does the block hash need to be considered a valid proof-of-work
     public static final int MINING_DIFFICULTY = 2;
+
+    // Number of fiscoin obtained for every block validation
+    public static final int MINING_REWARD = 5;
 
     @Getter
     private final WalletsManager walletsManager = new WalletsManager();
@@ -91,13 +96,13 @@ public final class Fiscoin extends JavaPlugin {
         if (currentTransactionBlock == null) {
             currentTransactionBlock = new FiscoinBlock(
                     blockchain.getLastBlockHash(),
-                    pendingTransactions.remove(0).toString(),
+                    pendingTransactions.remove(0),
                     ""
             );
         }
     }
 
-    private void addCurrentBlockSolution(@NotNull String nonce) {
+    public void addCurrentBlockSolution(@NotNull String nonce, @NotNull Player player) {
         if (currentTransactionBlock == null) {
             return;
         }
@@ -109,7 +114,7 @@ public final class Fiscoin extends JavaPlugin {
         FiscoinBlock current = currentTransactionBlock;
         FiscoinBlock solution = new FiscoinBlock(
                 current.getPreviousHash(),
-                current.getData(),
+                current.getTransaction(),
                 nonce,
                 current.getTimestamp()
         );
@@ -117,6 +122,21 @@ public final class Fiscoin extends JavaPlugin {
         // TODO: This is also bad, because one fake block would invalidate the global blockchain...
         if (copy.add(solution).isValid()) {
             blockchain.add(solution);
+
+            player.getWorld()
+                    .getPlayers()
+                    .forEach(target -> target.sendMessage(
+                            player.getDisplayName() + " found nonce " + ChatColor.AQUA + nonce + ChatColor.RESET +
+                                    " which validated transaction " + ChatColor.YELLOW + solution.getTransaction().getId() + ChatColor.RESET
+                    ));
+
+            if (!this.pendingTransactions.isEmpty()) {
+                currentTransactionBlock = new FiscoinBlock(
+                        blockchain.getLastBlockHash(),
+                        pendingTransactions.remove(0),
+                        ""
+                );
+            }
         }
     }
 
@@ -131,6 +151,6 @@ public final class Fiscoin extends JavaPlugin {
         )
                 .sign(alice.getPrivateKey());
 
-        pendingTransactions.add(transaction);
+        this.addTransaction(transaction);
     }
 }
