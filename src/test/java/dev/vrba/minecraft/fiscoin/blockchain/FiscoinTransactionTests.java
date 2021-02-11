@@ -1,58 +1,51 @@
 package dev.vrba.minecraft.fiscoin.blockchain;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.SecureRandom;
-import java.security.spec.ECGenParameterSpec;
-import java.security.spec.RSAKeyGenParameterSpec;
 
 import static org.junit.Assert.*;
 
 public class FiscoinTransactionTests {
 
-    private @NotNull KeyPair generateKeyRandomPair() {
-        try {
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-            generator.initialize(2048, new SecureRandom());
-
-            return generator.generateKeyPair();
-        }
-        catch (Exception exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
     @Test
     public void testTransactionCanBeCreated() {
-        KeyPair alice = generateKeyRandomPair();
-        KeyPair bob = generateKeyRandomPair();
+        Wallet alice = new Wallet();
+        Wallet bob = new Wallet();
 
-        FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublic(), bob.getPublic(), 0.1);
+        FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublicKey(), bob.getPublicKey(), 0.1);
 
         assertNotNull(transaction);
     }
 
     @Test
     public void testTransactionCanBeSignedAndVerified() {
-        KeyPair alice = generateKeyRandomPair();
-        KeyPair bob = generateKeyRandomPair();
+        Wallet alice = new Wallet();
+        Wallet bob = new Wallet();
 
-        FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublic(), bob.getPublic(), 0.1).sign(alice.getPrivate());
+        FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublicKey(), bob.getPublicKey(), 0.1)
+                .sign(alice.getPrivateKey());
 
         assertNotNull(transaction);
         assertTrue(transaction.verify());
     }
 
     @Test
-    public void testTransactionCannotBeNotSignedAndVerified() {
-        KeyPair alice = generateKeyRandomPair();
-        KeyPair bob = generateKeyRandomPair();
+    public void testTransactionCannotBeVerifiedWithoutSignature() {
+        Wallet alice = new Wallet();
+        Wallet bob = new Wallet();
 
-        FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublic(), bob.getPublic(), 0.1)
-                .sign(bob.getPrivate());
+        FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublicKey(), bob.getPublicKey(), 0.1);
+
+        assertNotNull(transaction);
+        assertFalse(transaction.verify());
+    }
+
+    @Test
+    public void testTransactionCannotBeNotSignedAndVerified() {
+        Wallet alice = new Wallet();
+        Wallet bob = new Wallet();
+
+        FiscoinTransaction transaction = new FiscoinTransaction(alice.getPublicKey(), bob.getPublicKey(), 0.1)
+                .sign(bob.getPrivateKey());
 
         assertNotNull(transaction);
         assertFalse(transaction.verify());

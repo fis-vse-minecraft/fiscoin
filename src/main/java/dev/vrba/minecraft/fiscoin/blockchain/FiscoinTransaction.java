@@ -70,6 +70,11 @@ public class FiscoinTransaction {
     }
 
     public boolean verify() {
+        if (this.signature == null) {
+            // Cannot verify a transaction that is not signed
+            return false;
+        }
+
         try {
             String input = Hex.encodeHexString(sender.getEncoded()) +
                     Hex.encodeHexString(receiver.getEncoded()) +

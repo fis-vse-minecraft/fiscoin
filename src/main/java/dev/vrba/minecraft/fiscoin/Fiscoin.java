@@ -1,12 +1,10 @@
 package dev.vrba.minecraft.fiscoin;
 
 import dev.vrba.minecraft.fiscoin.commands.CreateWalletCommand;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.security.Security;
 import java.util.Map;
 
 @SuppressWarnings("unused")
