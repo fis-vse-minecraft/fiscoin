@@ -17,30 +17,6 @@ public class FiscoinBlockchainTests {
         assertTrue(blockchain.isValid());
     }
 
-    private void findNonce(@NotNull FiscoinBlock block) {
-        int tries = 0;
-        String hash = "xd";
-        String nonce = "";
-        String proof = new String(new char[Fiscoin.MINING_DIFFICULTY]).replace('\0', '0');
-
-        while (!hash.startsWith(proof)) {
-            nonce = RandomStringUtils.randomAlphanumeric(10);
-
-            tries++;
-
-            FiscoinBlock updated = new FiscoinBlock(
-                    block.getPreviousHash(),
-                    block.getData(),
-                    nonce,
-                    block.getTimestamp()
-            );
-
-            hash = updated.getHash();
-        }
-
-        System.out.println("AFTER " + tries + " TRIES FOUND NONCE: " + nonce + " PRODUCING HASH " + hash);
-    }
-
     @Test
     public void testValidBlockChainCanBeValidated() {
         FiscoinBlockchain blockchain = new FiscoinBlockchain();
