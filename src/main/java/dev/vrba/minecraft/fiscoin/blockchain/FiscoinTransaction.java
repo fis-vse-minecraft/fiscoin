@@ -57,7 +57,7 @@ public class FiscoinTransaction {
                     Hex.encodeHexString(receiver.getEncoded()) +
                     value;
 
-            Signature signature = Signature.getInstance("ECDSA", BouncyCastleProvider.PROVIDER_NAME);
+            Signature signature = Signature.getInstance("SHA256withRSA");
 
             signature.initSign(key);
             signature.update(input.getBytes());
@@ -76,7 +76,7 @@ public class FiscoinTransaction {
                     Hex.encodeHexString(receiver.getEncoded()) +
                     value;
 
-            Signature signature = Signature.getInstance("ECDSA", BouncyCastleProvider.PROVIDER_NAME);
+            Signature signature = Signature.getInstance("SHA256withRSA");
 
             signature.initVerify(sender);
             signature.update(input.getBytes());

@@ -7,6 +7,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 import java.security.spec.ECGenParameterSpec;
+import java.security.spec.RSAKeyGenParameterSpec;
 
 import static org.junit.Assert.*;
 
@@ -14,11 +15,8 @@ public class FiscoinTransactionTests {
 
     private @NotNull KeyPair generateKeyRandomPair() {
         try {
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("ECDSA", "BC");
-            ECGenParameterSpec spec = new ECGenParameterSpec("prime192v1");
-            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-
-            generator.initialize(spec, random);
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+            generator.initialize(2048, new SecureRandom());
 
             return generator.generateKeyPair();
         }

@@ -14,14 +14,6 @@ public final class Fiscoin extends JavaPlugin {
     // Fiscoin symbol representation
     public static final String SYMBOL = "𝔽";
 
-    static {
-        System.out.println("Registering BC crypto provider");
-
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-    }
-
     @Override
     public void onEnable() {
         registerCommands();
