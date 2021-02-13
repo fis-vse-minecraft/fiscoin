@@ -1,7 +1,6 @@
 package dev.vrba.minecraft.fiscoin.commands;
 
 import dev.vrba.minecraft.fiscoin.Fiscoin;
-import dev.vrba.minecraft.fiscoin.WalletsManager;
 import dev.vrba.minecraft.fiscoin.blockchain.FiscoinWallet;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

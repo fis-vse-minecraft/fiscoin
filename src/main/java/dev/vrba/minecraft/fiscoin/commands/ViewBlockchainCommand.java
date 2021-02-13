@@ -44,16 +44,11 @@ public class ViewBlockchainCommand implements CommandExecutor {
 
     @NotNull
     private String blockToString(@NotNull FiscoinBlock block) {
-        return new StringBuilder()
-                .append(ChatColor.GRAY)
-                .append(StringUtils.abbreviate(block.getPreviousHash(), 16))
-                .append("...")
-                .append(ChatColor.RESET)
-                .append(" -> ")
-                .append(ChatColor.GREEN)
-                .append(StringUtils.abbreviate(block.getHash(), 16))
-                .append(ChatColor.RESET)
-                .toString();
+        return ChatColor.GRAY + StringUtils.abbreviate(block.getPreviousHash(), 32) + ChatColor.RESET + "\n" +
+                ChatColor.GREEN + StringUtils.abbreviate(block.getHash(), 32) + ChatColor.RESET + "\n" +
+                ChatColor.AQUA + block.getNonce() + ChatColor.RESET + "\n" +
+                ChatColor.YELLOW + block.getTransaction().getId().toString() + ChatColor.RESET + "\n" +
+                "---------------------";
 
     }
 }

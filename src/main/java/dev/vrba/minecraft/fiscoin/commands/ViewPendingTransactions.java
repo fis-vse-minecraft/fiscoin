@@ -53,6 +53,7 @@ public class ViewPendingTransactions implements CommandExecutor {
         return ChatColor.YELLOW + transaction.getId().toString() + ChatColor.RESET + "\n"
                 + "From: " + FiscoinWallet.fingerprint(transaction.getSender()) + "\n"
                 + "To: " + FiscoinWallet.fingerprint(transaction.getReceiver()) + "\n"
-                + "Value: " + transaction.getValue() + Fiscoin.SYMBOL + "\n";
+                + "Value: " + transaction.getValue() + Fiscoin.SYMBOL + "\n"
+                + "-------------";
     }
 }
