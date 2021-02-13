@@ -11,3 +11,5 @@ commands:
     description: View the current blockchain state and blocks
   wallet:
     description: Loads or generates player's crypto wallet
+  send:
+    description: Creates a signed transaction
