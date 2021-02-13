@@ -4,6 +4,7 @@ import dev.vrba.minecraft.fiscoin.blockchain.FiscoinBlock;
 import dev.vrba.minecraft.fiscoin.blockchain.FiscoinBlockchain;
 import dev.vrba.minecraft.fiscoin.blockchain.FiscoinTransaction;
 import dev.vrba.minecraft.fiscoin.blockchain.FiscoinWallet;
+import dev.vrba.minecraft.fiscoin.commands.CreateTransactionCommand;
 import dev.vrba.minecraft.fiscoin.commands.CreateWalletCommand;
 import dev.vrba.minecraft.fiscoin.commands.ViewBlockchainCommand;
 import dev.vrba.minecraft.fiscoin.commands.ViewPendingTransactions;
@@ -67,7 +68,8 @@ public final class Fiscoin extends JavaPlugin {
         Map<String, ? extends CommandExecutor> commands = Map.of(
                 "wallet", new CreateWalletCommand(this),
                 "blockchain", new ViewBlockchainCommand(this),
-                "transactions", new ViewPendingTransactions(this)
+                "transactions", new ViewPendingTransactions(this),
+                "send", new CreateTransactionCommand(this)
         );
 
         commands.forEach((name, executor) -> {
