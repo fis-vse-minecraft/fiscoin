@@ -13,3 +13,4 @@ commands:
     description: Loads or generates player's crypto wallet
   send:
     description: Creates a signed transaction
+    usage: /send <name> <amount>

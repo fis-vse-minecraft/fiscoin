@@ -1,6 +1,8 @@
 package dev.vrba.minecraft.fiscoin.commands;
 
 import dev.vrba.minecraft.fiscoin.Fiscoin;
+import dev.vrba.minecraft.fiscoin.WalletsManager;
+import dev.vrba.minecraft.fiscoin.blockchain.FiscoinTransaction;
 import dev.vrba.minecraft.fiscoin.blockchain.FiscoinWallet;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -21,28 +23,77 @@ public class CreateTransactionCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(
-            @NotNull CommandSender sender,
+            @NotNull CommandSender commandSender,
             @NotNull Command command,
             @NotNull String label,
             @NotNull String[] args
     ) {
-        if (!(sender instanceof Player)) {
+        if (!(commandSender instanceof Player)) {
             return false;
         }
 
-        Player player = (Player) sender;
-        Optional<FiscoinWallet> wallet = plugin.getWalletsManager().walletOf(player);
+        WalletsManager walletsManager = plugin.getWalletsManager();
 
-        if (wallet.isEmpty()) {
+        Player player = (Player) commandSender;
+        Optional<FiscoinWallet> sender = walletsManager.walletOf(player);
+
+        if (sender.isEmpty()) {
             player.sendMessage(
-                ChatColor.RED + "You don't own a wallet, so you cannot create transaction signed with a private key" + ChatColor.RESET + "\n" +
-                "You can generate a wallet by using " + ChatColor.YELLOW + "/wallet" + ChatColor.RESET + " command."
+                    ChatColor.RED + "You don't own a wallet, so you cannot create transaction signed with a private key" + ChatColor.RESET + "\n" +
+                            "You can generate a wallet by using " + ChatColor.YELLOW + "/wallet" + ChatColor.RESET + " command."
             );
             return false;
         }
 
-        // TODO: Search for the public key of target player and create a singed pending transaction
+        if (args.length != 2) {
+            return false;
+        }
 
-        return true;
+        try {
+            double value = Double.parseDouble(args[1]);
+            assert value > 0.0;
+
+            Optional<Player> target = ((Player) commandSender).getWorld()
+                    .getPlayers()
+                    .stream()
+                    .filter(it -> it.getName().equals(args[0]))
+                    .findFirst();
+
+            if (target.isEmpty()) {
+                player.sendMessage("Unknown player " + args[0]);
+                return false;
+            }
+
+            Optional<FiscoinWallet> receiver = walletsManager.walletOf(target.get());
+
+            if (receiver.isEmpty()) {
+                player.sendMessage(ChatColor.RED + target.get().getName() + " doesn't have a wallet." + ChatColor.RESET);
+                return false;
+            }
+
+            FiscoinTransaction transaction = new FiscoinTransaction(
+                    sender.get().getPublicKey(),
+                    receiver.get().getPublicKey(),
+                    value
+            )
+            .sign(sender.get().getPrivateKey());
+
+            plugin.addTransaction(transaction);
+
+            player.getWorld()
+                .getPlayers()
+                .forEach(it -> {
+                    it.sendMessage(
+                        player.getDisplayName() + " created a new transaction " +
+                        ChatColor.YELLOW + transaction.getId().toString() + ChatColor.RESET
+                    );
+                });
+
+            return true;
+        }
+        catch (NumberFormatException | AssertionError exception) {
+            player.sendMessage("Invalid transaction value. Expected a decimal value.");
+            return false;
+        }
     }
 }
