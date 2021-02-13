@@ -31,7 +31,7 @@ public final class Fiscoin extends JavaPlugin {
     public static final String SYMBOL = "Ƒ";
 
     // How many leading zeros does the block hash need to be considered a valid proof-of-work
-    public static final int MINING_DIFFICULTY = 2;
+    public static final int MINING_DIFFICULTY = 1;
 
     // Number of fiscoin obtained for every block validation
     public static final int MINING_REWARD = 5;
